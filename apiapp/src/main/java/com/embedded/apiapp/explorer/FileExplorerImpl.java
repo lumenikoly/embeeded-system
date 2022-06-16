@@ -1,6 +1,6 @@
 package com.embedded.apiapp.explorer;
 
-import com.embedded.apiapp.FileData;
+import com.embedded.apiapp.dto.FileData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileExistsException;
@@ -41,18 +41,22 @@ public class FileExplorerImpl implements FileExplorer {
     }
 
     @Override
-    public FileData readFile(String fileName, String filePath) throws IOException {
+    public FileData readFile(String fileName, String filePath) throws IOException, MissingRequestValueException {
         try {
-            var filePathFull = Path.of(filePath);
+            if (fileName.isBlank() || filePath.isBlank()) {
+                throw new MissingRequestValueException("Данные не заполнены!");
+            }
+            var filePathFull = Path.of(filePath.concat("/").concat(fileName).concat(EXTENSION));
             if (Files.notExists(filePathFull)) {
                 log.error("Ошибка! Файл не найден!");
                 throw new FileNotFoundException();
             }
-            String data = Arrays.toString(Files.readAllBytes(filePathFull));
+            String data = new String(Files.readAllBytes(filePathFull));
             log.info("Файл успешно прочитан");
             return FileData.builder()
                     .fileName(fileName)
                     .data(data)
+                    .filePath(filePathFull.toString())
                     .build();
         } catch (Exception e) {
             log.error("Произошла ошибка при чтении файла!", e);

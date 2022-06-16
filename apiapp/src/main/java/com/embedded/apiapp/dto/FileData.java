@@ -1,4 +1,4 @@
-package com.embedded.apiapp;
+package com.embedded.apiapp.dto;
 
 import lombok.Builder;
 

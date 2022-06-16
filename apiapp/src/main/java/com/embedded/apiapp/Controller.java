@@ -1,5 +1,7 @@
 package com.embedded.apiapp;
 
+import com.embedded.apiapp.dto.FileData;
+import com.embedded.apiapp.dto.FileRequest;
 import com.embedded.apiapp.explorer.FileExplorer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,11 +27,11 @@ public class Controller {
         log.info("Файл успешно записан");
     }
 
-    @GetMapping("/read/{fullFilePath}/{fileName}")
+    @GetMapping("/read")
     @ResponseStatus(HttpStatus.OK)
-    ResponseEntity<FileData> readFile(@PathVariable("fileName") String fileName, @PathVariable("fullFilePath") String fullFilePath) throws IOException {
-        log.info("Получен запрос на чтение файла с именем {}", fileName);
-        var file = fileExplorer.readFile(fileName, fullFilePath);
+    ResponseEntity<FileData> readFile(@RequestBody FileRequest fileRequest) throws Exception {
+        log.info("Получен запрос на чтение файла с именем {}", fileRequest.fileName());
+        var file = fileExplorer.readFile(fileRequest.fileName(), fileRequest.filePath());
         return ResponseEntity.ok(file);
     }
 }
